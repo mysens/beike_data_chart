@@ -7,23 +7,23 @@
                         <a-flex :vertical="false">
                             <a-space :size="10">
                                 <Selector />
-                                <a-button type="primary" :loading="item.iconLoading" @click="queryData(item)">
+                                <a-button type="primary" :loading="item.iconLoading" @click="updateChart(index, item)">
                                     <template #icon>
                                         <PoweroffOutlined />
                                     </template>
                                     查询
                                 </a-button>
-                                <a-button type="primary" danger>删除</a-button>
-                                
+                                <a-button type="primary" danger @click="delChart(index)">删除</a-button>
+
                             </a-space>
 
                         </a-flex>
-                        <MyEchart style="height: 280px" />
+                        <MyEchart ref="myCharts" style="height: 280px" />
                     </a-space>
                 </div>
                 <div class="content-box">
                     <div class="box">
-                        <div class="plus"></div>
+                        <div class="plus" @click="addChart()"></div>
                     </div>
                 </div>
             </a-space>
@@ -32,39 +32,22 @@
 </template>
 
 <script lang="ts" setup >
-import { reactive, ref } from 'vue';
+import {ref} from 'vue'
 import Selector from './Selector.vue'
 import MyEchart from './MyChart.vue'
 import { PoweroffOutlined } from '@ant-design/icons-vue';
+import useContextBox from '@/hooks/useContentBox'
 
+const {list, queryData, delChart, addChart} = useContextBox()
 
+const myCharts = ref()
 
-import request from '../util/request'
-
-request({
-  url: "/v1/area/info",
-}).then(res => {
-  console.log('res-------------', res);
-
-}).catch(err => {
-  console.log('err------------', err);
-
-})
-
-let default_item = reactive({
-    id: 1,
-    iconLoading: false
-})
-
-let list = [default_item]
-
-const queryData = (item: any) => {
-    item.iconLoading = true;
-
-    setTimeout(() => {
-        item.iconLoading = false;
-    }, 6000);
-};
+const updateChart = (index:number, item:BoxItem) => {
+    item.iconLoading = true
+    let option = queryData()
+    myCharts.value[index].updateChart(option)
+    item.iconLoading = false
+}
 
 </script>
 
