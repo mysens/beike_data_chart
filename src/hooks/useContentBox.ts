@@ -1,10 +1,20 @@
-import { ref } from 'vue';
 import type { ECOption } from '@/util/echart';
 import request from '@/util/request'
+import {reactive} from 'vue'
 
 export default function () {
 
-    const list: BoxItem[] = [newBoxItem()]
+    var autoIncreaseId = 0
+
+    function newBoxItem(): BoxItem {
+        autoIncreaseId = autoIncreaseId + 1
+        return {
+            id: autoIncreaseId,
+            iconLoading: false
+        }
+    }
+
+    const list = reactive<BoxItem[]>([newBoxItem()])
 
     async function queryData() {
         let result = await request({
@@ -30,18 +40,6 @@ export default function () {
             ]
         };
         return option
-    }
-
-
-
-    var autoIncreaseId = 0
-
-    function newBoxItem(): BoxItem {
-        autoIncreaseId = autoIncreaseId + 1
-        return {
-            id: autoIncreaseId,
-            iconLoading: false
-        }
     }
 
     function delChart(index: number) {

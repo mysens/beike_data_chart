@@ -11,8 +11,8 @@ const items = ref<MenuProps['items']>([
     {
         key: 'second_price',
         icon: () => h(AccountBookOutlined),
-        label: '二手均价',
-        title: '二手均价',
+        label: '二手成交',
+        title: '二手成交',
     },
     {
         key: 'popular',

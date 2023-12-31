@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+
+
 //1. 创建axios对象
 const service = axios.create({
-    baseURL:'http://localhost:8080'
+    baseURL:'https://api.mysens.club'
 });
 
 //2. 请求拦截器

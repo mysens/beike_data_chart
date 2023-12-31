@@ -6,7 +6,7 @@
                     <a-space direction="vertical" size="middle">
                         <a-flex :vertical="false">
                             <a-space :size="10">
-                                <Selector />
+                                <Selector  :options="options" />
                                 <a-button type="primary" :loading="item.iconLoading" @click="updateChart(index, item)">
                                     <template #icon>
                                         <PoweroffOutlined />
@@ -32,22 +32,56 @@
 </template>
 
 <script lang="ts" setup >
-import {ref} from 'vue'
+import { ref } from 'vue'
 import Selector from './Selector.vue'
 import MyEchart from './MyChart.vue'
 import { PoweroffOutlined } from '@ant-design/icons-vue';
 import useContextBox from '@/hooks/useContentBox'
+import request from '@/util/request'
 
-const {list, queryData, delChart, addChart} = useContextBox()
-
+const { list, queryData, delChart, addChart } = useContextBox()
 const myCharts = ref()
 
-const updateChart = (index:number, item:BoxItem) => {
+const updateChart = (index: number, item: BoxItem) => {
     item.iconLoading = true
     let option = queryData()
     myCharts.value[index].updateChart(option)
     item.iconLoading = false
 }
+
+let options = ref<CascaderOption[]>([])
+
+async function queryAreaInfo() {
+    let result = await request<AreaInfo[]>({
+        url: "/v1/area/info"
+    })
+    options.value = result.data.map(function (item) {
+        let res: CascaderOption = {
+            value: item.CityId,
+            label: item.CityName,
+            children: item.DistrictInfo.map(function (districtItem) {
+                let districtRes: CascaderOption = {
+                    value: districtItem.DistrictId.toString(),
+                    label: districtItem.DistrictName,
+                    children: districtItem.BizInfo.map(function (BizItem) {
+                        let bizRes: CascaderOption = {
+                            value: BizItem.BizId.toString(),
+                            label: BizItem.BizName,
+                        }
+                        return bizRes
+                    })
+                }
+                return districtRes
+            })
+        }
+        return res
+    });
+
+    // console.log("options", options)
+    
+}
+
+queryAreaInfo()
 
 </script>
 
