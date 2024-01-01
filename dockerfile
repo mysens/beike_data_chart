@@ -6,6 +6,6 @@ RUN sed -i "s@http://\(deb\|security\).debian.org@https://mirrors.cloud.tencent.
   apt-get update && \
   apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY default.conf /etc/nginx/default.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 COPY dist dist
