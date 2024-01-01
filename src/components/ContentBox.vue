@@ -3,25 +3,25 @@
         <a-flex wrap="wrap" gap="small">
             <!-- <a-space> -->
             <div class="content-box" v-for="(item, index) in list" :key="item.id">
-                <a-space direction="vertical" size="middle">
-                    <a-flex :vertical="false">
-                        <a-space :size="10">
-                            <Selector ref="mySelectors" :options="options" />
-                            <a-button type="primary" :loading="item.iconLoading" @click="updateChart(index, item)">
-                                <template #icon>
-                                    <PoweroffOutlined />
-                                </template>
-                                查询
-                            </a-button>
-                            <a-button type="primary" danger @click="delChart(index)">删除</a-button>
+                <!-- <a-space direction="vertical" size="middle"> -->
+                <a-flex :vertical="false" wrap="wrap" gap="small">
+                    <!-- <a-space :size="10"> -->
+                    <Selector ref="mySelectors" :options="options" />
+                    <a-button type="primary" :loading="item.iconLoading" @click="updateChart(index, item)">
+                        <template #icon>
+                            <PoweroffOutlined />
+                        </template>
+                        查询
+                    </a-button>
+                    <a-button type="primary" danger @click="delChart(index)">删除</a-button>
 
-                        </a-space>
+                    <!-- </a-space> -->
+                    <MyEchart ref="myCharts" style="margin-top: 10px;" />
+                </a-flex>
 
-                    </a-flex>
-                    <MyEchart ref="myCharts" />
-                </a-space>
+                <!-- </a-space> -->
             </div>
-            <div class="content-box">
+            <div class="content-box plus-box">
                 <div class="box">
                     <div class="plus" @click="addChart()"></div>
                 </div>
@@ -54,6 +54,11 @@ const mySelectors = ref()
 async function updateChart(index: number, item: BoxItem) {
     item.iconLoading = true
     let [city, districtId, bizcircleId] = mySelectors.value[index].value
+    if (city == undefined) {
+        alert("请选择区域")
+        item.iconLoading = false
+        return
+    }
     if (districtId == undefined) {
         districtId = 0
     }
@@ -98,6 +103,12 @@ async function updateChart(index: number, item: BoxItem) {
             },
             tooltip: {
                 trigger: 'axis'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '1%',
+                containLabel: true
             },
             xAxis: {
                 type: 'category',
@@ -166,11 +177,14 @@ queryAreaInfo()
 
 .content-box {
     width: 500px;
-    height: 350px;
     margin: 20px;
     padding: 20px;
     border: 1px solid rgba(5, 5, 5, 0.06);
     background-color: #ffffff;
+}
+
+.plus-box {
+    height: 350px
 }
 
 .box {
@@ -206,5 +220,31 @@ queryAreaInfo()
 
 .plus::before {
     transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+
+@media (max-width: 600px) {
+
+    /* CSS样式 */
+    .content {
+        padding: 0 20px;
+        background-color: #f5f5f5;
+    }
+
+    .content-box {
+        width: 500px;
+        margin: 20px;
+        padding: 20px;
+        border: 1px solid rgba(5, 5, 5, 0.06);
+        background-color: #ffffff;
+    }
+
+    .plus-box {
+        height: 200px
+    }
+
+    button {
+        width: 48%
+    }
 }
 </style>
