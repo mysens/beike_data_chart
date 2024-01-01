@@ -227,7 +227,7 @@ queryAreaInfo()
 
     /* CSS样式 */
     .content {
-        padding: 0 20px;
+        padding: 0;
         background-color: #f5f5f5;
     }
 
