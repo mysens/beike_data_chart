@@ -1,12 +1,12 @@
 version: "3"
  
 services:
-  beike-web-front:
+  beike-chart:
     build: 
       context: .
       dockerfile: ./dockerfile
-    image: beike-web-front
-    container_name: beike-web-front
+    image: beike-chart
+    container_name: beike-chart
     networks:
       default:
         ipv4_address: 172.18.0.6
