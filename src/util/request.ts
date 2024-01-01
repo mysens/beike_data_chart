@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-console.log(import.meta.env.VITE_API_HOST)
-
 //1. 创建axios对象
 const service = axios.create({
   baseURL: import.meta.env.VITE_API_HOST

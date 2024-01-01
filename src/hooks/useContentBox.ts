@@ -1,3 +1,4 @@
+import { message } from 'ant-design-vue'
 import { reactive } from 'vue'
 
 export default function () {
@@ -18,10 +19,12 @@ export default function () {
 
     function delChart(index: number) {
         list.splice(index, 1)
+        message.success("图表已删除", 3)
     }
 
     function addChart() {
         list.push(newBoxItem())
+        message.success("图表已添加", 3)
     }
 
     return { list, delChart, addChart }

@@ -1,7 +1,14 @@
 <template>
     <div class="content">
+
         <a-flex wrap="wrap" gap="small">
+            <a-page-header class="page-header" style="width:100%;padding-bottom:0" :title="dataCategory"
+                :sub-title="'此页面可查询近7日二手房' + dataCategory" />
             <!-- <a-space> -->
+            <!-- <div class="content-box" style="border-radius:20px">
+                此页面可查询近7日二手房<b>成交量</b>
+            </div> -->
+
             <div class="content-box" v-for="(item, index) in list" :key="item.id">
                 <!-- <a-space direction="vertical" size="middle"> -->
                 <a-flex :vertical="false" wrap="wrap" gap="small">
@@ -39,6 +46,7 @@ import { PoweroffOutlined } from '@ant-design/icons-vue';
 import useContextBox from '@/hooks/useContentBox'
 import request from '@/util/request'
 import type { ECOption } from '@/util/echart';
+import { message } from 'ant-design-vue';
 
 const props = defineProps<{ contentType: number }>()
 const contentType = props.contentType
@@ -55,7 +63,7 @@ async function updateChart(index: number, item: BoxItem) {
     item.iconLoading = true
     let [city, districtId, bizcircleId] = mySelectors.value[index].value
     if (city == undefined) {
-        alert("请选择区域")
+        message.error("请选择区域！", 5)
         item.iconLoading = false
         return
     }
@@ -93,8 +101,8 @@ async function updateChart(index: number, item: BoxItem) {
         }
         let option: ECOption = {
             title: {
-                text: dataCategory + '近7日数据',
-                subtext: "来源贝壳网",
+                text: '近7日' + dataCategory,
+                subtext: "数据来源贝壳网",
                 textStyle: {
                     color: '#333',
                     fontSize: 14,
@@ -126,8 +134,9 @@ async function updateChart(index: number, item: BoxItem) {
             ]
         };
         myCharts.value[index].updateEchart(option)
+        message.success('图表更新成功', 2);
     } else {
-        alert("查询不到该地区数据")
+        message.error("查询不到该地区数据", 5)
     }
     item.iconLoading = false
 }
@@ -181,6 +190,7 @@ queryAreaInfo()
     padding: 20px;
     border: 1px solid rgba(5, 5, 5, 0.06);
     background-color: #ffffff;
+    color: #333
 }
 
 .plus-box {
@@ -227,16 +237,20 @@ queryAreaInfo()
 
     /* CSS样式 */
     .content {
-        padding: 0;
+        padding: 20px 0;
         background-color: #f5f5f5;
     }
 
     .content-box {
-        width: 500px;
-        margin: 20px;
+        width: 100%;
+        margin: 0 20px;
         padding: 20px;
         border: 1px solid rgba(5, 5, 5, 0.06);
         background-color: #ffffff;
+    }
+
+    .content .page-header {
+        padding-top: 0;
     }
 
     .plus-box {
@@ -244,7 +258,7 @@ queryAreaInfo()
     }
 
     button {
-        width: 48%
+        width: 48.5%
     }
 }
 </style>
