@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-
+console.log(import.meta.env.VITE_API_HOST)
 
 //1. 创建axios对象
 const service = axios.create({
-    baseURL:'https://api.mysens.club'
+  baseURL: import.meta.env.VITE_API_HOST
 });
 
 //2. 请求拦截器
@@ -18,7 +18,7 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(response => {
   //判断code码
   return response.data;
-},error => {
+}, error => {
   return Promise.reject(error);
 });
 

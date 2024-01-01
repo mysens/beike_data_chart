@@ -5,7 +5,12 @@
         <Header />
       </a-layout-header>
       <a-layout-content :style="contentStyle">
-        <ContentBox />
+        <!-- <ContentBox /> -->
+        <router-view v-slot="{ Component }">
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
       </a-layout-content>
       <a-layout-footer :style="footerStyle">
         <Footer />
@@ -17,7 +22,6 @@
 import type { CSSProperties } from 'vue';
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
-import ContentBox from './components/ContentBox.vue'
 
 const headerStyle: CSSProperties = {
   textAlign: 'center',
@@ -40,7 +44,8 @@ const contentStyle: CSSProperties = {
 const footerStyle: CSSProperties = {
   textAlign: 'center',
   color: '#fff',
-  backgroundColor: '#fff',
+  backgroundColor: '#23282d',
+  padding: 0,
 };
 
 </script>

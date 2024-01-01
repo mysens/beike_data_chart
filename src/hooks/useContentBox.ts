@@ -1,6 +1,4 @@
-import type { ECOption } from '@/util/echart';
-import request from '@/util/request'
-import {reactive} from 'vue'
+import { reactive } from 'vue'
 
 export default function () {
 
@@ -16,31 +14,7 @@ export default function () {
 
     const list = reactive<BoxItem[]>([newBoxItem()])
 
-    async function queryData() {
-        let result = await request({
-            url: "/v1/area/info"
-        })
-        let option: ECOption = {
-            tooltip: {
-                trigger: 'axis'
-            },
-            xAxis: {
-                type: 'category',
-                data: ["Mon", 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-            },
-            yAxis: {
-                type: 'value'
-            },
-            series: [
-                {
-                    data: result.data,
-                    type: 'line',
-                    smooth: true
-                }
-            ]
-        };
-        return option
-    }
+    
 
     function delChart(index: number) {
         list.splice(index, 1)
@@ -50,7 +24,7 @@ export default function () {
         list.push(newBoxItem())
     }
 
-    return { list, queryData, delChart, addChart }
+    return { list, delChart, addChart }
 }
 
 

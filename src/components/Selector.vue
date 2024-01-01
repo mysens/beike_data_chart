@@ -7,6 +7,7 @@ import {ref, toRefs} from 'vue';
 const props = defineProps<{options:CascaderOption[]}>()
 const { options } =  toRefs(props)
 const value = ref<string[]>([]);
+defineExpose({value})
 </script>
   
   

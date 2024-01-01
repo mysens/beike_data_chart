@@ -1,32 +1,32 @@
 <template>
     <div class="content">
         <a-flex wrap="wrap" gap="small">
-            <a-space>
-                <div class="content-box" v-for="(item, index) in list" :key="item.id">
-                    <a-space direction="vertical" size="middle">
-                        <a-flex :vertical="false">
-                            <a-space :size="10">
-                                <Selector  :options="options" />
-                                <a-button type="primary" :loading="item.iconLoading" @click="updateChart(index, item)">
-                                    <template #icon>
-                                        <PoweroffOutlined />
-                                    </template>
-                                    查询
-                                </a-button>
-                                <a-button type="primary" danger @click="delChart(index)">删除</a-button>
+            <!-- <a-space> -->
+            <div class="content-box" v-for="(item, index) in list" :key="item.id">
+                <a-space direction="vertical" size="middle">
+                    <a-flex :vertical="false">
+                        <a-space :size="10">
+                            <Selector ref="mySelectors" :options="options" />
+                            <a-button type="primary" :loading="item.iconLoading" @click="updateChart(index, item)">
+                                <template #icon>
+                                    <PoweroffOutlined />
+                                </template>
+                                查询
+                            </a-button>
+                            <a-button type="primary" danger @click="delChart(index)">删除</a-button>
 
-                            </a-space>
+                        </a-space>
 
-                        </a-flex>
-                        <MyEchart ref="myCharts" style="height: 280px" />
-                    </a-space>
+                    </a-flex>
+                    <MyEchart ref="myCharts" />
+                </a-space>
+            </div>
+            <div class="content-box">
+                <div class="box">
+                    <div class="plus" @click="addChart()"></div>
                 </div>
-                <div class="content-box">
-                    <div class="box">
-                        <div class="plus" @click="addChart()"></div>
-                    </div>
-                </div>
-            </a-space>
+            </div>
+            <!-- </a-space> -->
         </a-flex>
     </div>
 </template>
@@ -38,16 +38,89 @@ import MyEchart from './MyChart.vue'
 import { PoweroffOutlined } from '@ant-design/icons-vue';
 import useContextBox from '@/hooks/useContentBox'
 import request from '@/util/request'
+import type { ECOption } from '@/util/echart';
 
-const { list, queryData, delChart, addChart } = useContextBox()
+const props = defineProps<{ contentType: number }>()
+const contentType = props.contentType
+let dataCategory = "成交量"
+if (contentType == 1) {
+    dataCategory = "带看量"
+}
+
+const { list, delChart, addChart } = useContextBox()
 const myCharts = ref()
+const mySelectors = ref()
 
-const updateChart = (index: number, item: BoxItem) => {
+async function updateChart(index: number, item: BoxItem) {
     item.iconLoading = true
-    let option = queryData()
-    myCharts.value[index].updateChart(option)
+    let [city, districtId, bizcircleId] = mySelectors.value[index].value
+    if (districtId == undefined) {
+        districtId = 0
+    }
+    if (bizcircleId == undefined) {
+        if (districtId == 0) {
+            bizcircleId = 0
+        } else {
+            bizcircleId = districtId
+        }
+    }
+    let result = await request<BeiDailyListData>(
+        "/v1/second/house/deal/daily",
+        {
+            method: "POST",
+            data: { city: city, recentPeriod: 7, type: 1, districtId: Number(districtId), bizcircleId: Number(bizcircleId) }
+        }
+
+    )
+    let xAxisData = []
+    let seriesData = []
+    if (result.data.total > 0) {
+        for (let item of result.data.list) {
+            xAxisData.push(item.date.slice(5, 10))
+            if (contentType == 1) {
+                //带看量
+                seriesData.push(item.showVisitorNum)
+            } else {
+                //成交量
+                seriesData.push(item.dealHouseNum)
+            }
+
+        }
+        let option: ECOption = {
+            title: {
+                text: dataCategory + '近7日数据',
+                subtext: "来源贝壳网",
+                textStyle: {
+                    color: '#333',
+                    fontSize: 14,
+                    fontFamily: 'Arial',
+                }
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: xAxisData
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    data: seriesData,
+                    type: 'line',
+                    smooth: true
+                }
+            ]
+        };
+        myCharts.value[index].updateEchart(option)
+    } else {
+        alert("查询不到该地区数据")
+    }
     item.iconLoading = false
 }
+
 
 let options = ref<CascaderOption[]>([])
 
@@ -63,13 +136,13 @@ async function queryAreaInfo() {
                 let districtRes: CascaderOption = {
                     value: districtItem.DistrictId.toString(),
                     label: districtItem.DistrictName,
-                    children: districtItem.BizInfo.map(function (BizItem) {
-                        let bizRes: CascaderOption = {
-                            value: BizItem.BizId.toString(),
-                            label: BizItem.BizName,
-                        }
-                        return bizRes
-                    })
+                    // children: districtItem.BizInfo.map(function (BizItem) {
+                    //     let bizRes: CascaderOption = {
+                    //         value: BizItem.BizId.toString(),
+                    //         label: BizItem.BizName,
+                    //     }
+                    //     return bizRes
+                    // })
                 }
                 return districtRes
             })
@@ -78,7 +151,7 @@ async function queryAreaInfo() {
     });
 
     // console.log("options", options)
-    
+
 }
 
 queryAreaInfo()
@@ -86,16 +159,18 @@ queryAreaInfo()
 </script>
 
 <style scoped>
-/* .content {
+.content {
     padding: 0 50px;
-} */
+    background-color: #f5f5f5;
+}
 
 .content-box {
     width: 500px;
-    height: 300px;
+    height: 350px;
     margin: 20px;
     padding: 20px;
     border: 1px solid rgba(5, 5, 5, 0.06);
+    background-color: #ffffff;
 }
 
 .box {

@@ -4,9 +4,10 @@ interface BoxItem {
 }
 
 type ApiResponse<T = any> = {
-    massage?: string;
-    code: number;
-    data: T;
+    massage?: string
+    code: number
+    data: T
+    RequestId?: string
 }
 
 type AreaInfo = {
@@ -31,3 +32,28 @@ type CascaderOption = {
     label: string,
     children?: CascaderOption[]
 }
+
+type ApiDataList<T = any> = {
+    total: number
+    list: T[]
+}
+
+type BeikeDailyData = {
+    id: number
+    city: string
+    date: string
+    districtId: number
+    bizcircleId: number
+    districtName: string
+    bizcircleName: string
+    dealHouseNum: number
+    newHouseNum: number
+    newGuestNum: number
+    showVisitorNum: number
+    l7NewHouseNum: number
+    l7dShowVisitorNum: number
+    ctime: string
+    mtime: string
+}
+
+type BeiDailyListData = ApiDataList<BeikeDailyData>

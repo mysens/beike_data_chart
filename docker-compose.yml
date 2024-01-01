@@ -1,0 +1,20 @@
+version: "3"
+ 
+services:
+  beike-web-front:
+    build: 
+      context: .
+      dockerfile: ./dockerfile
+    image: beike-web-front
+    container_name: beike-web-front
+    networks:
+      default:
+        ipv4_address: 172.18.0.6
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+
+networks:
+  default:
+    external: true
+    name: baobao_blog_my-net
